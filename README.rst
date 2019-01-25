@@ -21,3 +21,12 @@ On Windows,::
  > cmake --build build --config Release
  > set PYTHONPATH=.;%PYTHONPATH%
  > build\Release\test_program.exe
+
+On Linux or macOS,::
+
+ $ mkdir build
+ $ pushd build
+ $ cmake ..
+ $ popd
+ $ cmake --build build --config Release
+ $ PYTHONPATH=. build/test_program
