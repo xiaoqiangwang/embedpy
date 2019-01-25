@@ -12,7 +12,7 @@ You could need a compiler, a Python installation with numpy and cmake.
 
 Make sure Python is in the PATH.
 
-On Windows,::
+On Windows::
 
  > mkdir build
  > pushd build
@@ -22,7 +22,7 @@ On Windows,::
  > set PYTHONPATH=.;%PYTHONPATH%
  > build\Release\test_program.exe
 
-On Linux or macOS,::
+On Linux or macOS::
 
  $ mkdir build
  $ pushd build
