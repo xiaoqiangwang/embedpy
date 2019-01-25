@@ -1,42 +1,8 @@
-#define FEED_MAX_INPUT_ANALOGPARAMETER 80
-#define FEED_MAX_INPUT_BINARYPARAMETER 80
-#define FEED_MAX_INPUT_WAVEFORMPARAMETER 4
-#define FEED_MAX_OUTPUT_ANALOGPARAMETER 80
-#define FEED_MAX_OUTPUT_BINARYPARAMETER 80
-#define FEED_MAX_OUTPUT_WAVEFORMPARAMETER 4
-
-struct feedback_data {
-    int device;
-    double ai[FEED_MAX_INPUT_ANALOGPARAMETER];
-    unsigned int bi[FEED_MAX_INPUT_BINARYPARAMETER];
-    unsigned short *waveinput[FEED_MAX_INPUT_WAVEFORMPARAMETER];
-    size_t waveform_x_input;
-    size_t waveform_y_input;
-    size_t waveform_inputsize;
-    double ao[FEED_MAX_OUTPUT_ANALOGPARAMETER];
-    short ao_valid[FEED_MAX_OUTPUT_ANALOGPARAMETER];
-    unsigned int bo[FEED_MAX_OUTPUT_BINARYPARAMETER];
-    short bo_valid[FEED_MAX_OUTPUT_BINARYPARAMETER];
-    double waveoutput[FEED_MAX_OUTPUT_WAVEFORMPARAMETER];
-    void *algorithemdata;
-    double shadow_ao[FEED_MAX_INPUT_ANALOGPARAMETER];
-    unsigned int shadow_bo[FEED_MAX_INPUT_BINARYPARAMETER];
-};
-
-
-extern "C" {
-    void __declspec(dllexport) init_adapter(size_t size_x, size_t size_y, size_t size_z, int device);
-    void __declspec(dllexport) calc_adapter(int sizedata, feedback_data* data);
-    void __declspec(dllexport) free_adapter(int device);
-}
-
 #include <Python.h>
 #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
 #include <numpy/arrayobject.h>
 
-#include <cstdio>
-#include <cstdlib>
-#include <cmath>
+#include "processplugin_python.h"
 
 /* module/function object pointes */
 static PyObject *pModule = NULL;
@@ -179,32 +145,3 @@ void free_adapter(int device) {
     }
 }
 
-/* test program to drive the entry functions */
-int main(int argc, char **argv)
-{
-    const size_t size_x=100, size_y=100, size_z=1;
-    int device = 2;
-    struct feedback_data demo_data = {0};
-
-    /* demo image showing a centered gaussian spot */
-    double offset = 10, amplitude = 100, x0 = size_x / 2, y0 = size_y / 2, sigmax = 30, sigmay=50;
-    unsigned short image[size_x * size_y];
-    for (size_t j = 0; j < size_y; j++)
-        for (size_t i = 0; i < size_x; i++) {
-            image[j * size_x + i] = (unsigned short) (offset + rand() % 10 + amplitude * exp(-0.5 * pow(i-x0, 2) / pow(sigmax, 2) - 0.5 * pow(j-y0, 2) / pow(sigmay, 2)));
-        }
- 
-    /* fill in demo_data */
-    demo_data.device = device;
-    demo_data.ai[1] = 1;
-    demo_data.waveform_x_input = size_x;
-    demo_data.waveform_y_input = size_y;
-    demo_data.waveinput[0] = image;
-
-    /* call the entry functions in turn */
-    init_adapter(size_x, size_y, size_z, device);
-    calc_adapter(device, &demo_data);
-    free_adapter(device);
-
-    return 0;
-}
