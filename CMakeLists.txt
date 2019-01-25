@@ -6,7 +6,7 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 project(embedpy)
 
 find_package(PythonLibs REQUIRED)
-find_package(numpy REQUIRED)
+find_package(Numpy REQUIRED)
 
 # create the process plugin
 set(SOURCES
